@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Customer;
+use App\Models\User;
+use App\Models\Wallet;
+
+class CustomerService
+{
+    public function createWallet(string $phone): Wallet
+    {
+        return Customer::create(['phone' => $phone]);
+    }
+}

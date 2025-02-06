@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\OperationStatus;
+use Illuminate\Support\Facades\Cache;
+
+class OperationStatusService
+{
+    public function getStatusId(string $status): int
+    {
+        return Cache::rememberForever("operation_status_{$status}_id", static function () use ($status) {
+            return OperationStatus::query()->where('name', $status)->value('id');
+        });
+    }
+}

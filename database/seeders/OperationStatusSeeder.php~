@@ -1,0 +1,23 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\OperationStatus;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
+class OperationStatusSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        OperationStatus::updateOrInsert(['id' => 1], ['name' => 'pending']);
+        OperationStatus::updateOrInsert(['id' => 2], ['name' => 'approved']);
+        OperationStatus::updateOrInsert(['id' => 3], ['name' => 'rejected']);
+        OperationStatus::updateOrInsert(['id' => 4], ['name' => 'canceled']);
+    }
+}

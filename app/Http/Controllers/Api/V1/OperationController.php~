@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1;
+
+use App\Exceptions\InsufficientBalanceException;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\StoreOperationRequest;
+use App\Models\Wallet;
+use App\Services\OperationService;
+use Illuminate\Http\JsonResponse;
+
+class OperationController extends Controller
+{
+    public function index(Wallet $wallet): JsonResponse
+    {
+        return response()->json(
+            $wallet
+                ->operations()
+                ->with('operationType')
+                ->with('operationStatus')
+                ->paginate()
+        );
+    }
+
+    public function store(
+        StoreOperationRequest $request,
+        Wallet                $wallet,
+        OperationService      $operationService): JsonResponse
+    {
+        try {
+            $operation = $operationService->createOperation(
+                $wallet,
+                $request->operation_type_id,
+                $request->amount
+            );
+            $operation = $operationService->approveOperation($operation);
+            $operation->load(['operationStatus', 'operationType']);
+            return response()->json($operation);
+        } catch (InsufficientBalanceException $insufficientBalanceException) {
+            return response()->json(['message' => __('Insufficient balance')], 400);
+        }
+    }
+}
