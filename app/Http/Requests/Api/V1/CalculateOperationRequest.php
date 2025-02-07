@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * @property int $money_amount
+ * @property int $operation_type_id
  */
 class CalculateOperationRequest extends FormRequest
 {
@@ -17,7 +18,8 @@ class CalculateOperationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'money_amount' => 'required|int'
+            'money_amount' => 'required|int',
+            'operation_type_id' => 'required|int'
         ];
     }
 }

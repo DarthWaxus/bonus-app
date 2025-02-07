@@ -15,6 +15,8 @@ use App\Services\BonusProgramService;
 use App\Services\OperationService;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
+use InvalidArgumentException;
+use Throwable;
 
 class OperationController extends Controller
 {
@@ -98,10 +100,16 @@ class OperationController extends Controller
     public function calculate(Wallet $wallet, CalculateOperationRequest $request, BonusProgramService $bonusProgramService): JsonResponse
     {
         try {
+            $operationType = (int)$request->validated('operation_type_id');
+            $bonusesAmount = match ($operationType) {
+                OperationTypeEnum::ACCRUAL->value => $bonusProgramService->convertMoneyToBonusesForAccrual($wallet->bonusProgram, $request->money_amount),
+                OperationTypeEnum::PURCHASE->value => $bonusProgramService->convertMoneyToBonusesForPurchase($wallet->bonusProgram, $request->money_amount),
+                default => throw new InvalidArgumentException("Invalid operation type: $operationType"),
+            };
             return response()->json([
-                'bonuses_amount' => $bonusProgramService->convertMoneyToBonusesForAccrual($wallet->bonusProgram, $request->money_amount)
+                'bonuses_amount' => $bonusesAmount
             ]);
-        } catch (BindingResolutionException $e) {
+        } catch (Throwable $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
