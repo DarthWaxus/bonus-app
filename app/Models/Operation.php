@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property int $wallet_id
  * @property int $amount
+ * @property int $money_amount
  * @property int $operation_type_id
  * @property int $operation_status_id
  * @property Wallet $wallet
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Operation extends Model
 {
-    protected $fillable = ['wallet_id', 'amount', 'operation_type_id', 'operation_status_id'];
+    protected $fillable = ['wallet_id', 'amount', 'operation_type_id', 'operation_status_id', 'money_amount'];
 
     public function operationType(): BelongsTo
     {

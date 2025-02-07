@@ -3,11 +3,17 @@
 namespace App\Services;
 
 use App\Models\Customer;
-use App\Models\User;
 use App\Models\Wallet;
 
 class WalletService
 {
+    protected BonusProgramService $bonusProgramService;
+
+    public function __construct(BonusProgramService $bonusProgramService)
+    {
+        $this->bonusProgramService = $bonusProgramService;
+    }
+
     public function createWallet(int $customerId, int $bonusProgramId): Wallet
     {
         /** @var Customer $customer */

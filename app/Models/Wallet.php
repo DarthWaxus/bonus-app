@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\BonusProgramService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Wallet extends Model
 {
     protected $fillable = ['customer_id', 'bonus_program_id'];
+    protected $with = ['bonusProgram'];
 
     public function customer(): BelongsTo
     {

@@ -18,7 +18,7 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request, CustomerService $customerService): JsonResponse
     {
-        return response()->json($customerService->createCustomer($request->phone));
+        return response()->json($customerService->createCustomer($request->validated('phone')));
     }
 
     public function show(Customer $customer): JsonResponse

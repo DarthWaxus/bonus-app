@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             OperationStatusSeeder::class,
             OperationTypeSeeder::class,
             BonusProgramSeeder::class,
+            UserSeeder::class
         ]);
     }
 }

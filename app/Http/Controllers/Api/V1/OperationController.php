@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Enums\OperationTypeEnum;
 use App\Exceptions\InsufficientBalanceException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\V1\CalculateOperationRequest;
+use App\Http\Requests\Api\V1\AccrualOperationRequest;
+use App\Http\Requests\Api\V1\PurchaseOperationRequest;
 use App\Http\Requests\Api\V1\StoreOperationRequest;
+use App\Models\Operation;
 use App\Models\Wallet;
+use App\Services\BonusProgramService;
 use App\Services\OperationService;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\JsonResponse;
 
 class OperationController extends Controller
@@ -30,14 +37,72 @@ class OperationController extends Controller
         try {
             $operation = $operationService->createOperation(
                 $wallet,
-                $request->operation_type_id,
-                $request->amount
+                $request->validated('operation_type_id'),
+                $request->validated('bonuses_amount')
             );
             $operation = $operationService->approveOperation($operation);
             $operation->load(['operationStatus', 'operationType', 'wallet']);
             return response()->json($operation);
-        } catch (InsufficientBalanceException $insufficientBalanceException) {
+        } catch (InsufficientBalanceException) {
             return response()->json(['message' => __('Insufficient balance')], 400);
+        } catch (BindingResolutionException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function accrual(
+        AccrualOperationRequest $request,
+        Wallet                  $wallet,
+        OperationService        $operationService): JsonResponse
+    {
+        try {
+            $operation = $operationService->createAccrualOperation(
+                $wallet,
+                $request->validated('purchase_money_amount')
+            );
+            $operation = $operationService->approveOperation($operation);
+            $operation->load(['operationStatus', 'operationType', 'wallet']);
+            return response()->json($operation);
+        } catch (InsufficientBalanceException) {
+            return response()->json(['message' => __('Insufficient balance')], 400);
+        } catch (BindingResolutionException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function purchase(
+        PurchaseOperationRequest $request,
+        Wallet                   $wallet,
+        OperationService         $operationService): JsonResponse
+    {
+        try {
+            $operation = $operationService->createPurchaseOperation(
+                $wallet,
+                $request->validated('purchase_money_amount')
+            );
+            $operation = $operationService->approveOperation($operation);
+            $operation->load(['operationStatus', 'operationType', 'wallet']);
+            return response()->json($operation);
+        } catch (InsufficientBalanceException) {
+            return response()->json(['message' => __('Insufficient balance')], 400);
+        } catch (BindingResolutionException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
+
+    public function show(Operation $operation): JsonResponse
+    {
+        return response()->json($operation);
+    }
+
+    public function calculate(Wallet $wallet, CalculateOperationRequest $request, BonusProgramService $bonusProgramService): JsonResponse
+    {
+        try {
+            return response()->json([
+                'bonuses_amount' => $bonusProgramService->convertMoneyToBonusesForAccrual($wallet->bonusProgram, $request->money_amount)
+            ]);
+        } catch (BindingResolutionException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         }
     }
 }

@@ -19,7 +19,8 @@ return new class extends Migration {
             $table->foreignIdFor(Wallet::class);
             $table->foreignIdFor(OperationStatus::class);
             $table->foreignIdFor(OperationType::class);
-            $table->integer('amount');
+            $table->integer('amount')->default(0);
+            $table->integer('money_amount')->default(0);
         });
     }
 

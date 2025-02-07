@@ -5,10 +5,9 @@ namespace App\Http\Requests\Api\V1;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property int $operation_type_id
- * @property int $bonuses_amount
+ * @property int $money_amount
  */
-class StoreOperationRequest extends FormRequest
+class CalculateOperationRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -18,8 +17,7 @@ class StoreOperationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'operation_type_id' => 'required|int|exists:operation_types,id',
-            'bonuses_amount' => 'required|int',
+            'money_amount' => 'required|int'
         ];
     }
 }
